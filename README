@@ -1,4 +1,4 @@
-RAPHAEL.JSON
+RAPHAEL.EXPORT
 
   Export Raphaël paper objects to SVG. Also works in browsers that don't support SVG.
 
