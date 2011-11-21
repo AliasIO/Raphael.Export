@@ -5,7 +5,7 @@
  */
 
 Raphael.fn.export = function() {
-	var svg = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" width="' + this.width + '" version="1.1" height="' + this.height + '">';
+	var svg = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + this.width + '" version="1.1" height="' + this.height + '">';
 
 	for ( var node = paper.bottom; node != null; node = node.next ) {
 		var attrs = '';
@@ -25,6 +25,14 @@ Raphael.fn.export = function() {
 					name = 'xlink:href';
 
 					break;
+				case 'transform':
+					name = '';
+
+					break;
+			}
+
+			if ( name ) {
+				attrs += ' ' + name + '="' + node.attrs[i] + '"';
 			}
 
 			attrs += ' ' + name + '="' + node.attrs[i] + '"';
