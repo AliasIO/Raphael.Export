@@ -5,7 +5,10 @@
  */
 
 Raphael.fn.export = function() {
-	var svg = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + this.width + '" version="1.1" height="' + this.height + '">';
+	var
+		paper = this,
+		svg   = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + paper.width + '" version="1.1" height="' + paper.height + '">'
+		;
 
 	for ( var node = paper.bottom; node != null; node = node.next ) {
 		var attrs = '';
