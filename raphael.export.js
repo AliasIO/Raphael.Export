@@ -38,7 +38,7 @@ Raphael.fn.export = function() {
 			attrs += ' ' + name + '="' + node.attrs[i] + '"';
 		}
 
-		svg += '<' + node.type + ' transform="' + node.matrix + '"' + attrs + '></' + node.type + '>';
+		svg += '<' + node.type + ' transform="matrix(' + node.matrix.toString().replace(/^matrix\(|\)$/g, '') + ')"' + attrs + '></' + node.type + '>';
 	}
 
 	svg += '</svg>';
