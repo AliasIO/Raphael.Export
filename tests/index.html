@@ -1,41 +1,53 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Raphael.Export Tests</title>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
-<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
-<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.0.0/raphael-min.js"></script>
-<script type="text/javascript" src="../raphael.export.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-  test('Raphael.fn.export is defined', function() {
-    equal(typeof Raphael.fn['export'], 'function');
-  });
-  
-  var paper = Raphael('raphael-export-paper');
-  var rect = paper.rect(50, 40, 50, 50);
-  var text = paper.text(40, 30, "Hello World");
-  var svg = paper['export']();
-  
-  test('export does not duplicate attrs', function() {
-    ok(svg.indexOf(' x="50" x="50"') === -1, 'Duplicate x="50" found');
-  });
+	<head>
+		<title>Raphael.Export Tests</title>
 
-  test('export escapes quotes properly', function() {
-    ok(svg.indexOf('&quot;Arial&quot') > -1, '"&quot;Arial&quot;" not found');
-  });
-});
-</script>
-</head>
-<body>
-  <h1 id="qunit-header">Raphael.Export Tests</h1>
-  <h2 id="qunit-banner"></h2>
-  <div id="qunit-testrunner-toolbar"></div>
-  <h2 id="qunit-userAgent"></h2>
-  <ol id="qunit-tests"></ol>
-  <div id="qunit-fixture">
-    <div id="raphael-export-paper"></div>
-  </div>
-</body>
+		<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css"/>
+
+		<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.0.0/raphael-min.js"></script>
+		<script type="text/javascript" src="../raphael.export.js"></script>
+
+		<script type="text/javascript">
+			$(function() {
+				test('Raphael.fn.toSVG is defined', function() {
+					equal(typeof Raphael.fn.toSVG, 'function');
+				});
+
+				var
+					paper = Raphael('raphael-export-paper'),
+					rect  = paper.rect(50, 40, 50, 50),
+					text  = paper.text(40, 30, 'Hello World'),
+					svg   = paper.toSVG()
+					;
+
+				test('export does not duplicate attrs', function() {
+					ok(svg.indexOf(' x="50" x="50"') === -1, 'Duplicate x="50" found');
+				});
+
+				console.log(svg);
+
+				test('export escapes quotes properly', function() {
+					ok(svg.indexOf('&quot;Arial&quot') > -1, '"&quot;Arial&quot;" not found');
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<h1 id="qunit-header">Raphael.Export Tests</h1>
+
+		<h2 id="qunit-banner"></h2>
+
+		<div id="qunit-testrunner-toolbar"></div>
+
+		<h2 id="qunit-userAgent"></h2>
+
+		<ol id="qunit-tests"></ol>
+
+		<div id="qunit-fixture">
+			<div id="raphael-export-paper"></div>
+		</div>
+	</body>
 </html>

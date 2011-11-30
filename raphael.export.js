@@ -5,55 +5,55 @@
  */
 
 (function() {
-  
-// Escapes a string for XML interpolation. See http://stackoverflow.com/a/1091953/139712
-// Adapted from underscore.js. See http://documentcloud.github.com/underscore/underscore.js
-function escape(string) {
-  return (''+string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
-}
+	Raphael.fn.toSVG = function() {
+		var
+			paper = this,
+			svg   = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + paper.width + '" version="1.1" height="' + paper.height + '">'
+			;
 
-Raphael.fn['export'] = function() {
-	var
-		paper = this,
-		svg   = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + paper.width + '" version="1.1" height="' + paper.height + '">'
-		;
+		for ( var node = paper.bottom; node != null; node = node.next ) {
+			var attrs = '';
 
-	for ( var node = paper.bottom; node != null; node = node.next ) {
-		var attrs = '';
-
-		switch ( node.type ) {
-			case 'image':
-				attrs += ' preserveAspectRatio="none"';
-
-				break;
-		}
-
-		for ( i in node.attrs ) {
-			var name = i;
-
-			switch ( i ) {
-				case 'src':
-					name = 'xlink:href';
-
-					break;
-				case 'transform':
-					name = '';
+			switch ( node.type ) {
+				case 'image':
+					attrs += ' preserveAspectRatio="none"';
 
 					break;
 			}
 
-			if ( name ) {
-				attrs += ' ' + name + '="' + escape(node.attrs[i]) + '"';
+			for ( i in node.attrs ) {
+				var name = i;
+
+				switch ( i ) {
+					case 'src':
+						name = 'xlink:href';
+
+						break;
+					case 'transform':
+						name = '';
+
+						break;
+				}
+
+				if ( name ) {
+					var attr = node.attrs[i].toString();
+
+					// Escape string for XML interpolation
+					var replace = { '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot', '\'': 'apos' };
+
+					for ( entity in replace ) {
+						attr = attr.replace(new RegExp(entity, 'g'), '&' + replace[entity] + ';');
+					}
+
+					attrs += ' ' + name + '="' + attr + '"';
+				}
 			}
 
+			svg += '<' + node.type + ' transform="matrix(' + node.matrix.toString().replace(/^matrix\(|\)$/g, '') + ')"' + attrs + '></' + node.type + '>';
 		}
 
-		svg += '<' + node.type + ' transform="matrix(' + node.matrix.toString().replace(/^matrix\(|\)$/g, '') + ')"' + attrs + '></' + node.type + '>';
-	}
+		svg += '</svg>';
 
-	svg += '</svg>';
-
-	return svg;
-};
-
+		return svg;
+	};
 })();
