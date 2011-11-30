@@ -16,13 +16,15 @@ $(document).ready(function() {
   var paper = Raphael('raphael-export-paper');
   var rect = paper.rect(50, 40, 50, 50);
   var text = paper.text(40, 30, "Hello World");
+  var svg = paper['export']();
   
   test('export does not duplicate attrs', function() {
-    var svg = paper['export']();
     ok(svg.indexOf(' x="50" x="50"') === -1, 'Duplicate x="50" found');
   });
 
-  
+  test('export escapes quotes properly', function() {
+    ok(svg.indexOf('&quot;Arial&quot') > -1, '"&quot;Arial&quot;" not found');
+  });
 });
 </script>
 </head>
