@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Raphael.Export Tests</title>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+<script type="text/javascript" src="https://raw.github.com/DmitryBaranovskiy/raphael/master/raphael.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+<script type="text/javascript" src="../raphael.export.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  test('Raphael.fn.export is defined', function() {
+    equal(typeof Raphael.fn['export'], 'function');
+  });
+});
+</script>
+</head>
+<body>
+  <h1 id="qunit-header">Raphael.Export Tests</h1>
+  <h2 id="qunit-banner"></h2>
+  <div id="qunit-testrunner-toolbar"></div>
+  <h2 id="qunit-userAgent"></h2>
+  <ol id="qunit-tests"></ol>
+  <div id="qunit-fixture">test markup, will be hidden</div>
+</body>
+</html>
