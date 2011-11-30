@@ -4,6 +4,14 @@
  *
  */
 
+(function() {
+  
+// Escapes a string for XML interpolation. See http://stackoverflow.com/a/1091953/139712
+// Adapted from underscore.js. See http://documentcloud.github.com/underscore/underscore.js
+function escape(string) {
+  return (''+string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
 Raphael.fn['export'] = function() {
 	var
 		paper = this,
@@ -35,7 +43,7 @@ Raphael.fn['export'] = function() {
 			}
 
 			if ( name ) {
-				attrs += ' ' + name + '="' + node.attrs[i] + '"';
+				attrs += ' ' + name + '="' + escape(node.attrs[i]) + '"';
 			}
 
 		}
@@ -47,3 +55,5 @@ Raphael.fn['export'] = function() {
 
 	return svg;
 };
+
+})();
