@@ -4,7 +4,7 @@
  *
  */
 
-Raphael.fn.export = function() {
+Raphael.fn['export'] = function() {
 	var
 		paper = this,
 		svg   = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + paper.width + '" version="1.1" height="' + paper.height + '">'
@@ -47,4 +47,4 @@ Raphael.fn.export = function() {
 	svg += '</svg>';
 
 	return svg;
-}
+};
