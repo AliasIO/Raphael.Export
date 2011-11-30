@@ -15,10 +15,11 @@ $(document).ready(function() {
   
   var paper = Raphael('raphael-export-paper');
   var rect = paper.rect(50, 40, 50, 50);
-
+  var text = paper.text(40, 30, "Hello World");
+  
   test('export does not duplicate attrs', function() {
     var svg = paper['export']();
-    equal(svg.lastIndexOf(' x='), svg.indexOf(' x='));
+    ok(svg.indexOf(' x="50" x="50"') === -1, 'Duplicate x="50" found');
   });
 
   
