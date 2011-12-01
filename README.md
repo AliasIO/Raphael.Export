@@ -1,8 +1,6 @@
 RAPHAEL.EXPORT
 =============
-
 Export Raphaël paper objects to SVG. Also works in browsers that don't support SVG.
-
 
 EXAMPLE
 -------
@@ -14,16 +12,16 @@ EXAMPLE
     <div id="bar"></div>
     
     <script type="text/javascript">
-        var paper = Raphael('foo');
-        
-        var rect = paper
-            .rect(50, 40, 50, 50)
-            .attr('fill', '#f00')
-            .transform('s2')
-            .rotate(10)
-            ;
-        
-        var svg = paper.toSVG();
+      var paper = Raphael('foo');
+      
+      var rect = paper
+          .rect(50, 40, 50, 50)
+          .attr('fill', '#f00')
+          .transform('s2')
+          .rotate(10)
+          ;
+      
+      var svg = paper.toSVG();
         
   	  document.getElementById('bar').innerHTML = svg;
     </script>
