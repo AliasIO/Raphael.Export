@@ -4,9 +4,8 @@
 		<title>Raphael.Export Tests</title>
 		<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css"/>
     <style type="text/css">
-      #qunit-fixture {
+      #visual-tests {
         font-family: Arial;
-        position: static;
         margin: 16px 16px;
       }
       .paper {
@@ -20,7 +19,7 @@
     </style>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
 		<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
-		<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.0.0/raphael-min.js"></script>
+		<script type="text/javascript" src="raphael.js"></script>
 		<script type="text/javascript" src="../raphael.export.js"></script>
 
 		<script type="text/javascript">
@@ -32,12 +31,12 @@
 				});
 
 				var
-					paper = Raphael('raphael-paper'),
+			   paper = Raphael('raphael-paper'),
 					rect  = paper.rect(50, 40, 50, 50),
 					text  = paper.text(40, 30, 'Hello World');
 					;
 					
-        text.attr('text-anchor', 'left');
+        text.attr({'text-anchor' : 'left'});
         var svg = paper.toSVG();
 
 				test('does not duplicate tag attributes', function() {
@@ -55,6 +54,7 @@
 				});
 				
 				if (Raphael.svg === true) {
+          // Currently doesn't work on Firefox 3.6
 				  document.getElementById('raphael-export-paper').innerHTML = svg;
 				} else {
 				  $('#raphael-export-paper').text("NOT SVG Browser: " + svg);
@@ -72,8 +72,8 @@
 		<h2 id="qunit-userAgent"></h2>
 
 		<ol id="qunit-tests"></ol>
-
-		<div id="qunit-fixture">
+    <div id="qunit-fixture"></div>
+		<div id="visual-tests">
       <h2>Visual Tests for SVG Browsers</h2>
       <p>Left = Raphael, Right = Raphael.Export (via DOM insert)</p>
 			<div id="raphael-paper" class="paper"></div>
