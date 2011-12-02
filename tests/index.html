@@ -8,7 +8,7 @@
         font-family: Arial;
         margin: 16px 16px;
       }
-      .paper {
+      .paper, .exported-paper {
         display: block;
         float: left;
         margin-right: 8px;
@@ -31,7 +31,7 @@
 				});
 
 				var
-			   paper = Raphael('raphael-paper'),
+			    paper = Raphael('raphael-paper'),
 					rect  = paper.rect(50, 40, 50, 50),
 					text  = paper.text(40, 30, 'Hello World');
 					;
@@ -50,14 +50,15 @@
 				test('serializes text tag', function() {
 				  var expected = 'Hello World';
 				  var actual = svg.replace(/^.*?<text\b.*?<tspan\b.*?>(.*)<\/tspan><\/text>.*$/, '$1');
-          equal(actual, expected);
+          equal(actual, expected, 'text present');
+          ok(svg.match(/^.*?<text\b.*?><tspan\ dy=".*?">.*?<\/tspan><\/text>.*$/), 'tspan dy attribute present');
 				});
 				
 				if (Raphael.svg === true) {
           // Currently doesn't work on Firefox 3.6
 				  document.getElementById('raphael-export-paper').innerHTML = svg;
 				} else {
-				  $('#raphael-export-paper').text("NOT SVG Browser: " + svg);
+				  $('#raphael-export-paper').html("<p>Not an SVG Browser but here's the SVG exported.</p>").text(svg);
 				}
 			});
 		</script>
@@ -77,7 +78,7 @@
       <h2>Visual Tests for SVG Browsers</h2>
       <p>Left = Raphael, Right = Raphael.Export (via DOM insert)</p>
 			<div id="raphael-paper" class="paper"></div>
-      <div id="raphael-export-paper" class="paper"></div>
+      <div id="raphael-export-paper" class="exported-paper"></div>
 		</div>
 	</body>
 </html>

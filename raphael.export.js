@@ -1,10 +1,12 @@
-/*
+/**
+ * Raphael.Export https://github.com/ElbertF/Raphael.Export
+ * 
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  *
  */
 
-(function() {
+(function(R) {
   /**
    * Escape string for XML interpolation
    * @param s the string
@@ -35,65 +37,70 @@
   }
 
   /**
-   * Creates a tag
+   * Utility method for creating a tag
    * @param name the tag name, e.g., 'text'
-   * @param attrs the attribute string, e.g., 'name="val1"'
+   * @param attrs the attribute string, e.g., name1="val1" name2="val2"
    * @param content the content string inside the tag
    * @returns string
    */
   function tag(name, attrs, content) {
     return '<' + name + ' ' + attrs + '>' +  content + '</' + name + '>';
   }
-  
+
   /**
-   * Generic SVG element serializer
-   * Correctly tested with text and tspan elements
-   * @param node the Raphael SVGElement
-   * @return string the serialized XML
+   * Get style attribute from node
+   * @return string
    */
-  function generic_svg_serializer(node, i) {
-    if (typeof node.nodeName === 'undefined') {
-      return null;
-    }
-    if (node.nodeName === '#text') {
-      return node.nodeValue;
-    }
-    
-    var attrs =  map(node.attributes, function(attribute, i) {
-      if (i.match(/\d+/) === false || attribute.value === undefined) return null;
-      return attribute.name + '="' + escape(attribute.value) + '"';
-    }).join(' ');
-    
-    return tag(node.nodeName, attrs, map(node.childNodes, generic_svg_serializer));
+  function style(node) {
+    var font = {
+        size : node.attrs.font.replace(/^.*?(\d+px).*$/, '$1'),
+        family : node.attrs.font.replace(/^.*?"(\w+)".*$/, '$1')
+    };
+    // TODO figure out what 'normal' is
+    return "font: normal normal normal " + font.size + "/normal " + font.family; 
   }
   
-  function vml_serializer(node) {
-    if (node.type === 'text') {
-      return tag(
-        'text',
-        map(node.attrs, function(value, name) {
-          if (name === 'text' || name === 'w' || name == 'h' ) return null;
-          return name + '="' + escape(value.toString()) + '"';
-        }).join(' '),
-        tag('tspan', '', node.attrs['text'])
-      );
+  var serializer = {
+    'text' : function(node) {
+      
+        // See tspan in Raphael.js
+        var 
+          bb = node._getBBox(),
+          diff = node.attrs.y - (bb.y + bb.height / 2),
+          attrs = "";
+ 
+        //if (diff && R.is(diff, "finite")) attrs = 'dy="' + diff + '"';
+        var attrs = 'dy="' + diff + '"';
+        
+        return tag(
+          'text',
+          
+          'style="text-anchor: middle; ' + style(node) + ';" ' + map(node.attrs, function(value, name) {
+            if (name === 'text' || name === 'w' || name == 'h' ) return null;
+            return name + '="' + escape(value.toString()) + '"';
+          }).join(' '),
+          
+          tag('tspan', attrs, node.attrs['text'])
+        );
     }
-  }
+    // Should go here serializer goes here
+  };
   
-	Raphael.fn.toSVG = function() {
+	R.fn.toSVG = function() {
 		var
 			paper = this,
 			svg   = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + paper.width + '" version="1.1" height="' + paper.height + '">'
 			;
 
 		for ( var node = paper.bottom; node != null; node = node.next ) {
-		  if (node.type === 'text') {
-		    svg += Raphael.svg === true ? generic_svg_serializer(node.node) : vml_serializer(node);
-		    continue;
-		  }
-		  
 			var attrs = '';
 
+			// Use serializer
+			if (typeof serializer[node.type] === 'function') {
+        svg += serializer[node.type](node);
+        continue;
+			}
+			
 			switch ( node.type ) {
 				case 'image':
 					attrs += ' preserveAspectRatio="none"';
@@ -126,4 +133,4 @@
 
 		return svg;
 	};
-})();
+})(window.Raphael);
