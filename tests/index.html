@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>Raphael.Export Tests</title>
-		<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css"/>
+		<link rel="stylesheet" href="qunit.css" type="text/css"/>
     <style type="text/css">
       #visual-tests {
         font-family: Arial;
@@ -17,8 +17,8 @@
         border: 1px solid #ccc;
       }
     </style>
-		<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
-		<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+		<script type="text/javascript" src="jquery.js"></script>
+		<script type="text/javascript" src="qunit.js"></script>
 		<script type="text/javascript" src="raphael.js"></script>
 		<script type="text/javascript" src="../raphael.export.js"></script>
 
@@ -48,10 +48,9 @@
 				});
 				
 				test('serializes text tag', function() {
-				  var expected = 'Hello World';
-				  var actual = svg.replace(/^.*?<text\b.*?<tspan\b.*?>(.*)<\/tspan><\/text>.*$/, '$1');
-          equal(actual, expected, 'text present');
-          ok(svg.match(/^.*?<text\b.*?><tspan\ dy=".*?">.*?<\/tspan><\/text>.*$/), 'tspan dy attribute present');
+          equal($(svg).find('tspan').text(), 'Hello World', 'text present');
+          ok($(svg).find('tspan[dy]').length > 0, 'tspan dy attribute present');
+          ok($(svg).find('tspan[dy]').attr('dy') !== '0', 'tspan dy attribute is not "0"');
 				});
 				
 				if (Raphael.svg === true) {
