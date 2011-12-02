@@ -8,11 +8,11 @@
 
 (function(R) {
   /**
-   * Escape string for XML interpolation
+   * Escapes string for XML interpolation
    * @param s the string
    * @returns string escaped
    */
-  function escape(s) {
+  function escapeXML(s) {
     var replace = { '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot', '\'': 'apos' };
 
     for (var entity in replace ) {
@@ -77,7 +77,7 @@
           
           'style="text-anchor: middle; ' + style(node) + ';" ' + map(node.attrs, function(value, name) {
             if (name === 'text' || name === 'w' || name == 'h' ) return null;
-            return name + '="' + escape(value.toString()) + '"';
+            return name + '="' + escapeXML(value.toString()) + '"';
           }).join(' '),
           
           tag('tspan', attrs, node.attrs['text'])
@@ -122,7 +122,7 @@
 				}
 
 				if ( name ) {
-					attrs += ' ' + name + '="' + escape(node.attrs[i].toString()) + '"';
+					attrs += ' ' + name + '="' + escapeXML(node.attrs[i].toString()) + '"';
 				}
 			}
 
