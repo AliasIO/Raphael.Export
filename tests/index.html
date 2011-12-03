@@ -33,10 +33,14 @@
 				var
 			    paper = Raphael('raphael-paper'),
 					rect  = paper.rect(50, 40, 50, 50),
-					text  = paper.text(40, 30, 'Hello World');
+					text  = paper.text(120, 30, 'Hello World'),
+          mediumText = paper.text(120, 80, 'Medium Font, Right Anchored');
+				  biggerText = paper.text(140, 120, 'Bigger Font, Middle Anchored');
 					;
 					
         text.attr({'text-anchor' : 'left'});
+        mediumText.attr({'font-size' : 16, 'text-anchor' : 'right'});
+        biggerText.attr({'font-size' : 20, 'text-anchor' : 'middle'});
         var svg = paper.toSVG();
 
 				test('does not duplicate tag attributes', function() {
@@ -48,9 +52,10 @@
 				});
 				
 				test('serializes text tag', function() {
-          equal($(svg).find('tspan').text(), 'Hello World', 'text present');
+          equal($(svg).find('tspan:first').text(), 'Hello World', 'text present');
           ok($(svg).find('tspan[dy]').length > 0, 'tspan dy attribute present');
-          ok($(svg).find('tspan[dy]').attr('dy') !== '0', 'tspan dy attribute is not "0"');
+          ok($(svg).find('tspan[dy]:first"').attr('dy') !== '0', 'tspan dy attribute is not "0"');
+          ok($($(svg).find('text')[1]).attr('font-size') === '16px', 'tspan font-size attribute is "16px"');
 				});
 				
 				if (Raphael.svg === true) {
