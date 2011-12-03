@@ -2,21 +2,25 @@
 <html>
 	<head>
 		<title>Raphael.Export Tests</title>
+
 		<link rel="stylesheet" href="qunit.css" type="text/css"/>
-    <style type="text/css">
-      #visual-tests {
-        font-family: Arial;
-        margin: 16px 16px;
-      }
-      .paper, .exported-paper {
-        display: block;
-        float: left;
-        margin-right: 8px;
-        width: 320px;
-        height: 240px;
-        border: 1px solid #ccc;
-      }
-    </style>
+
+		<style type="text/css">
+			#visual-tests {
+				font-family: Arial;
+				margin: 16px 16px;
+			}
+
+			.paper, .exported-paper {
+				border: 1px solid #ccc;
+				display: block;
+				float: left;
+				height: 240px;
+				margin-right: 8px;
+				width: 320px;
+			}
+		</style>
+
 		<script type="text/javascript" src="jquery.js"></script>
 		<script type="text/javascript" src="qunit.js"></script>
 		<script type="text/javascript" src="raphael.js"></script>
@@ -24,24 +28,34 @@
 
 		<script type="text/javascript">
 			$(function() {
-			  module('toSVG()');
-			  
+				module('toSVG()');
+
 				test('is defined', function() {
 					equal(typeof Raphael.fn.toSVG, 'function');
 				});
 
-				var
-			    paper = Raphael('raphael-paper'),
-					rect  = paper.rect(50, 40, 50, 50),
-					text  = paper.text(120, 30, 'Hello World'),
-          mediumText = paper.text(120, 80, 'Medium Font, Right Anchored');
-				  biggerText = paper.text(140, 120, 'Bigger Font, Middle Anchored');
-					;
-					
-        text.attr({'text-anchor' : 'left'});
-        mediumText.attr({'font-size' : 16, 'text-anchor' : 'right'});
-        biggerText.attr({'font-size' : 20, 'text-anchor' : 'middle'});
-        var svg = paper.toSVG();
+				var paper = Raphael('raphael-paper');
+
+				paper.rect(50, 40, 50, 50);
+
+				paper.text(120, 30, 'Hello World')
+					.attr({
+						'text-anchor': 'left'
+					});
+
+				paper.text(120, 80, 'Medium Font, Right Anchored')
+					.attr({
+						'text-anchor': 'right',
+						'font-size': 16
+					});
+
+				paper.text(140, 120, 'Bigger Font, Middle Anchored')
+					.attr({
+						'text-anchor': 'middle',
+						'font-size': 20
+					});
+
+				var svg = paper.toSVG();
 
 				test('does not duplicate tag attributes', function() {
 					ok(svg.indexOf(' x="50" x="50"') === -1, 'Duplicate x="50" found');
@@ -50,19 +64,25 @@
 				test('escapes quotes', function() {
 					ok(svg.indexOf('&quot;Arial&quot') > -1, '"&quot;Arial&quot;" not found');
 				});
-				
+
 				test('serializes text tag', function() {
-          equal($(svg).find('tspan:first').text(), 'Hello World', 'text present');
-          ok($(svg).find('tspan[dy]').length > 0, 'tspan dy attribute present');
-          ok($(svg).find('tspan[dy]:first"').attr('dy') !== '0', 'tspan dy attribute is not "0"');
-          ok($($(svg).find('text')[1]).attr('font-size') === '16px', 'tspan font-size attribute is "16px"');
+					equal($(svg).find('tspan:first').text(), 'Hello World', 'text present');
+
+					ok($(svg).find('tspan[dy]').length > 0, 'tspan dy attribute present');
+
+					ok($(svg).find('tspan[dy]:first"').attr('dy') !== '0', 'tspan dy attribute is not "0"');
+
+					ok($($(svg).find('text')[1]).attr('font-size') === '16px', 'tspan font-size attribute is "16px"');
 				});
-				
-				if (Raphael.svg === true) {
-          // Currently doesn't work on Firefox 3.6
-				  document.getElementById('raphael-export-paper').innerHTML = svg;
+
+				if ( Raphael.svg === true ) {
+					// Currently doesn't work on Firefox 3.6
+					document.getElementById('raphael-export-paper').innerHTML = svg;
 				} else {
-				  $('#raphael-export-paper').html("<p>Not an SVG Browser but here's the SVG exported.</p>").text(svg);
+					$('#raphael-export-paper')
+						.html('<p>Not an SVG Browser but here\'s the SVG exported.</p>')
+						.text(svg)
+						;
 				}
 			});
 		</script>
@@ -77,12 +97,16 @@
 		<h2 id="qunit-userAgent"></h2>
 
 		<ol id="qunit-tests"></ol>
-    <div id="qunit-fixture"></div>
+
+		<div id="qunit-fixture"></div>
+
 		<div id="visual-tests">
-      <h2>Visual Tests for SVG Browsers</h2>
-      <p>Left = Raphael, Right = Raphael.Export (via DOM insert)</p>
-			<div id="raphael-paper" class="paper"></div>
-      <div id="raphael-export-paper" class="exported-paper"></div>
+			<h2>Visual Tests for SVG Browsers</h2>
+
+			<p>Left = Raphael, Right = Raphael.Export (via DOM insert)</p>
+
+			<div id="raphael-paper"        class="paper"></div>
+			<div id="raphael-export-paper" class="exported-paper"></div>
 		</div>
 	</body>
 </html>
