@@ -30,7 +30,7 @@
   function map(array, callback) {
     var mapped = new Array;
     for(var i in array) {
-      value = callback.call(this, array[i], i);
+      var value = callback.call(this, array[i], i);
       if (value !== null) mapped.push(value);
     }
     return mapped;
@@ -48,42 +48,58 @@
   }
 
   /**
-   * Get style attribute from node
+   * @return object the style object
+   */
+  function extractStyle(node) {
+    return {
+      font : {
+        family : node.attrs.font.replace(/^.*?"(\w+)".*$/, '$1'),
+        size : typeof node.attrs['font-size'] === 'undefined' ? null : node.attrs['font-size']
+      }
+    };
+  }
+  
+  /**
+   * @param style object from style()
    * @return string
    */
-  function style(node) {
-    var font = {
-        size : node.attrs.font.replace(/^.*?(\d+px).*$/, '$1'),
-        family : node.attrs.font.replace(/^.*?"(\w+)".*$/, '$1')
-    };
-    // TODO figure out what 'normal' is
-    return "font: normal normal normal " + font.size + "/normal " + font.family; 
+  function style2string(style) {
+    // TODO figure out what is 'normal'
+    return "font: normal normal normal 10px/normal " + style.font.family
+      +  (style.font.size === null ? '' : '; font-size: ' + style.font.size + "px")
+      ;
+  }
+  
+  /**
+   * Computes tspan dy using font size. This formula was empircally determined 
+   * using a best-fit line. Works well in both VML and SVG browsers.
+   * @param fontSize number
+   * @return number
+   */
+  function computeTSpanDy(fontSize) {
+    if (fontSize === null) {
+      fontSize = 10;
+    }
+    return fontSize * 4.5 / 13;
   }
   
   var serializer = {
     'text' : function(node) {
-      
-        // See tspan in Raphael.js
-        var 
-          bb = node._getBBox(),
-          diff = node.attrs.y - (bb.y + bb.height / 2),
-          attrs = "";
- 
-        //if (diff && R.is(diff, "finite")) attrs = 'dy="' + diff + '"';
-        var attrs = 'dy="' + diff + '"';
-        
+        style = extractStyle(node);
         return tag(
           'text',
           
-          'style="text-anchor: middle; ' + style(node) + ';" ' + map(node.attrs, function(value, name) {
+          'style="text-anchor: middle; ' + style2string(style) + ';" ' + map(node.attrs, function(value, name) {
             if (name === 'text' || name === 'w' || name == 'h' ) return null;
+            if (name === 'font-size') value = value + 'px';
+              
             return name + '="' + escapeXML(value.toString()) + '"';
           }).join(' '),
           
-          tag('tspan', attrs, node.attrs['text'])
+          tag('tspan', 'dy="' + computeTSpanDy(style.font.size) + '"', node.attrs['text'])
         );
     }
-    // Should go here serializer goes here
+    // Other serializers should go here
   };
   
 	R.fn.toSVG = function() {
