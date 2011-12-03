@@ -9,10 +9,14 @@
 (function(R) {
   /**
    * Escapes string for XML interpolation
-   * @param s the string
+   * @param value string or number value to escape
    * @returns string escaped
    */
   function escapeXML(s) {
+    if (typeof s === 'number') {
+      return s.toString();
+    }
+    
     var replace = { '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot', '\'': 'apos' };
 
     for (var entity in replace ) {
@@ -23,27 +27,47 @@
   
   /**
    * Generic map function
-   * @param array the array to be mapped
-   * @param callback the callback function(element) 
+   * @param iterable the array or object to be mapped
+   * @param callback the callback function(element, key) 
    * @returns array
    */
-  function map(array, callback) {
+  function map(iterable, callback) {
     var mapped = new Array;
-    for(var i in array) {
-      var value = callback.call(this, array[i], i);
+    for(var i in iterable) if (iterable.hasOwnProperty(i)) {
+      var value = callback.call(this, iterable[i], i);
       if (value !== null) mapped.push(value);
     }
+ 
     return mapped;
+  }
+  
+  /**
+   * Generic reduce function
+   * @param iterable array or object to be reduced
+   * @param callback the callback function(initial, element, i)
+   * @param initial the initial value
+   * @return the reduced value
+   */
+  function reduce(iterable, callback, initial) {
+    for(var i in iterable) if (iterable.hasOwnProperty(i))
+      initial = callback.call(this, initial, iterable[i], i);
+    return initial;
   }
 
   /**
    * Utility method for creating a tag
    * @param name the tag name, e.g., 'text'
-   * @param attrs the attribute string, e.g., name1="val1" name2="val2"
+   * @param attrs the attribute string, e.g., name1="val1" name2="val2" 
+   * or attribute map, e.g., { name1 : 'val1', name2 : 'val2' }
    * @param content the content string inside the tag
-   * @returns string
+   * @returns string of the tag
    */
   function tag(name, attrs, content) {
+    if (typeof attrs === 'object') {
+      attrs = map(attrs, function(element, name) {
+        return name + '="' + escapeXML(element) + '"';
+      }).join(' ');
+    }
     return '<' + name + ' ' + attrs + '>' +  content + '</' + name + '>';
   }
 
@@ -86,17 +110,21 @@
   var serializer = {
     'text' : function(node) {
         style = extractStyle(node);
+        
         return tag(
           'text',
-          
-          'style="text-anchor: middle; ' + style2string(style) + ';" ' + map(node.attrs, function(value, name) {
-            if (name === 'text' || name === 'w' || name == 'h' ) return null;
-            if (name === 'font-size') value = value + 'px';
-              
-            return name + '="' + escapeXML(value.toString()) + '"';
-          }).join(' '),
-          
-          tag('tspan', 'dy="' + computeTSpanDy(style.font.size) + '"', node.attrs['text'])
+          reduce(
+            node.attrs,
+            function(initial, value, name) {
+              if (name !== 'text' && name !== 'w' && name !== 'h' ) {
+                if (name === 'font-size') value = value + 'px';
+                initial[name] = value.toString();
+              }
+              return initial;
+            },
+            { style : 'text-anchor: middle; ' + style2string(style) + ';'}
+          ),
+          tag('tspan', { dy : computeTSpanDy(style.font.size) }, node.attrs['text'])
         );
     }
     // Other serializers should go here
