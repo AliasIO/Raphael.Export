@@ -1,8 +1,8 @@
-RAPHAEL.EXPORT
+Raphael.Export
 =============
-Export Raphaël paper objects to SVG. Also works in browsers that don't support SVG.
+Export Raphaël paper objects to SVG. Also works in browsers that don't support SVG (e.g., IE6, IE7, IE8).
 
-EXAMPLE
+Example
 -------
 
     <script type="text/javascript" src="raphael-min.js"></script>
