@@ -36,7 +36,15 @@
 
 				var paper = Raphael('raphael-paper');
 
-				paper.rect(50, 40, 50, 50);
+				paper.rect(50, 40, 50, 50)
+					.rotate(10)
+					.scale(1.2)
+					.translate(10, 10)
+					;
+
+				paper.circle(50, 40, 20);
+
+				paper.path('M10,10L10,20L20,20L20,30');
 
 				paper.text(120, 30, 'Hello World')
 					.attr({

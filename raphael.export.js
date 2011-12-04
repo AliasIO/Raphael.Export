@@ -140,9 +140,13 @@
 
 	R.fn.toSVG = function() {
 		var
-			paper = this,
-			svg   = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + paper.width + '" version="1.1" height="' + paper.height + '">'
+			paper   = this,
+			restore = { svg: R.svg, vml: R.vml },
+			svg     = '<svg style="overflow: hidden; position: relative;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + paper.width + '" version="1.1" height="' + paper.height + '">'
 			;
+
+		R.svg = true;
+		R.vml = false;
 
 		for ( var node = paper.bottom; node != null; node = node.next ) {
 			var attrs = '';
@@ -183,6 +187,9 @@
 		}
 
 		svg += '</svg>';
+
+		R.svg = restore.svg;
+		R.vml = restore.vml;
 
 		return svg;
 	};
