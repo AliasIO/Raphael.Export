@@ -70,6 +70,10 @@
 	* @returns string of the tag
 	*/
 	function tag(name, attrs, content) {
+		if ( typeof attrs === 'undefined' || attrs === null ) {
+			content = '';
+		}
+
 		if ( typeof attrs === 'object' ) {
 			attrs = map(attrs, function(element, name) {
 				return name + '="' + escapeXML(element) + '"';
@@ -134,6 +138,20 @@
 					),
 				tag('tspan', { dy: computeTSpanDy(style.font.size) }, node.attrs['text'])
 				);
+		},
+		'path' : function(node) {
+			return tag(
+				'path',
+				reduce(
+					node.attrs,
+					function(initial, value, name) {
+						if ( name === 'path' ) name = 'd';
+						initial[name] = value.toString();
+						return initial;
+					},
+					{}
+				)
+			);
 		}
 		// Other serializers should go here
 	};
