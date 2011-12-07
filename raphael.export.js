@@ -70,7 +70,7 @@
 	* @returns string of the tag
 	*/
 	function tag(name, attrs, content) {
-		if ( typeof attrs === 'undefined' || attrs === null ) {
+		if ( typeof content === 'undefined' || content === null ) {
 			content = '';
 		}
 
@@ -140,6 +140,7 @@
 				);
 		},
 		'path' : function(node) {
+			var initial = (node.matrix.a === 1 && node.matrix.d === 1) ? {} : { 'transform' : node.matrix.toString() };
 			return tag(
 				'path',
 				reduce(
@@ -149,7 +150,7 @@
 						initial[name] = value.toString();
 						return initial;
 					},
-					{}
+					initial
 				)
 			);
 		}
