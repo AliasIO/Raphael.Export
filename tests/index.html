@@ -16,6 +16,7 @@
 				display: block;
 				float: left;
 				height: 240px;
+				margin-top: 16px;
 				margin-right: 8px;
 				width: 320px;
 			}
@@ -24,6 +25,7 @@
 		<script type="text/javascript" src="jquery.js"></script>
 		<script type="text/javascript" src="qunit.js"></script>
 		<script type="text/javascript" src="raphael.js"></script>
+		<script type="text/javascript" src="tiger.js"></script>
 		<script type="text/javascript" src="../raphael.export.js"></script>
 
 		<script type="text/javascript">
@@ -46,6 +48,12 @@
 
 				paper.path('M10,10L10,20L20,20L20,30');
 
+				paper.path('M10,10L10,20L20,20L20,30')
+					.rotate(-25)
+					.scale(1.75)
+					.translate(10,5)
+					;
+
 				paper.text(120, 30, 'Hello World')
 					.attr({
 						'text-anchor': 'left'
@@ -63,18 +71,25 @@
 						'font-size': 20
 					});
 
+				// Rounded rect
 				paper.rect(10, 160, 40, 40, 5)
 
+				var paperTiger = new Raphael('tiger');
+				paperTiger.add(tiger);
+
 				var svg = paper.toSVG();
+				var tigerSVG = paperTiger.toSVG();
 
 				if ( Raphael.svg === true ) {
 					// Currently doesn't work on Firefox 3.6
 					document.getElementById('raphael-export-paper').innerHTML = svg;
+					document.getElementById('tiger-exported').innerHTML = tigerSVG;
 				} else {
 					$('#raphael-export-paper')
 						.html('<p>Not an SVG Browser but here\'s the SVG exported.</p>')
 						.text(svg)
 						;
+					$('#tiger-exported').text(svg);
 				}
 
 				test('does not duplicate tag attributes', function() {
@@ -122,6 +137,9 @@
 
 			<div id="raphael-paper"        class="paper"></div>
 			<div id="raphael-export-paper" class="exported-paper"></div>
+			<br style="clear: both;" />
+			<div id="tiger"								 class="paper"></div>
+			<div id="tiger-exported"			 class="exported-paper"></div>
 		</div>
 	</body>
 </html>
