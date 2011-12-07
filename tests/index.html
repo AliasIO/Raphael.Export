@@ -63,7 +63,19 @@
 						'font-size': 20
 					});
 
+				paper.rect(10, 160, 40, 40, 5)
+
 				var svg = paper.toSVG();
+
+				if ( Raphael.svg === true ) {
+					// Currently doesn't work on Firefox 3.6
+					document.getElementById('raphael-export-paper').innerHTML = svg;
+				} else {
+					$('#raphael-export-paper')
+						.html('<p>Not an SVG Browser but here\'s the SVG exported.</p>')
+						.text(svg)
+						;
+				}
 
 				test('does not duplicate tag attributes', function() {
 					ok(svg.indexOf(' x="50" x="50"') === -1, 'Duplicate x="50" found');
@@ -83,16 +95,11 @@
 					ok($($(svg).find('text')[1]).attr('font-size') === '16px', 'tspan font-size attribute is "16px"');
 				});
 
-				if ( Raphael.svg === true ) {
-					// Currently doesn't work on Firefox 3.6
-					document.getElementById('raphael-export-paper').innerHTML = svg;
-				} else {
-					$('#raphael-export-paper')
-						.html('<p>Not an SVG Browser but here\'s the SVG exported.</p>')
-						.text(svg)
-						;
-				}
+				test('serializes path tag', function() {
+					ok($(svg).find('path[d]').length > 0, 'path d attribute present');
+				});
 			});
+
 		</script>
 	</head>
 	<body>
