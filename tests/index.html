@@ -46,6 +46,15 @@
 
 				paper.circle(50, 40, 20);
 
+				paper.set(
+					paper.rect(50, 40, 50, 50)
+						.attr({ fill: '135-#f00-#ff0', transform: 'T120,120', 'stroke-dasharray': '- ', 'stroke-width': 3 })
+						,
+					paper.circle(50, 40, 20)
+						.attr({ fill: '#f00', transform: 'T60,150', opacity: .5 })
+						.glow({ width: 50, color: '#F00' })
+					);
+
 				paper.path('M10,10L10,20L20,20L20,30');
 
 				paper.path('M10,10L10,20L20,20L20,30')
