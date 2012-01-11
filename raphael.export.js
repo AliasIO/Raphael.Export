@@ -52,7 +52,7 @@
 	* @return the reduced value
 	*/
 	function reduce(iterable, callback, initial) {
-		for( var i in iterable) {
+		for ( var i in iterable ) {
 			if ( iterable.hasOwnProperty(i) ) {
 				initial = callback.call(this, initial, iterable[i], i);
 			}
@@ -69,7 +69,7 @@
 	* @param content the content string inside the tag
 	* @returns string of the tag
 	*/
-	function tag(name, attrs, content) {
+	function tag(name, attrs, matrix, content) {
 		if ( typeof content === 'undefined' || content === null ) {
 			content = '';
 		}
@@ -80,7 +80,7 @@
 			}).join(' ');
 		}
 
-		return '<' + name + ' ' + attrs + '>' +  content + '</' + name + '>';
+		return '<' + name + ( matrix ? ' transform="matrix(' + matrix.toString().replace(/^matrix\(|\)$/g, '') + ')" ' : ' ' ) + attrs + '>' +  content + '</' + name + '>';
 	}
 
 	/**
@@ -101,8 +101,7 @@
 	*/
 	function styleToString(style) {
 		// TODO figure out what is 'normal'
-		return 'font: normal normal normal 10px/normal ' + style.font.family + ( style.font.size === null ? '' : '; font-size: ' + style.font.size + 'px' )
-		;
+		return 'font: normal normal normal 10px/normal ' + style.font.family + ( style.font.size === null ? '' : '; font-size: ' + style.font.size + 'px' );
 	}
 
 	/**
@@ -136,23 +135,28 @@
 					},
 					{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
 					),
-				tag('tspan', { dy: computeTSpanDy(style.font.size) }, node.attrs['text'])
+				node.matrix,
+				tag('tspan', { dy: computeTSpanDy(style.font.size) }, null, node.attrs['text'])
 				);
 		},
 		'path' : function(node) {
-			var initial = (node.matrix.a === 1 && node.matrix.d === 1) ? {} : { 'transform' : node.matrix.toString() };
+			var initial = ( node.matrix.a === 1 && node.matrix.d === 1 ) ? {} : { 'transform' : node.matrix.toString() };
+
 			return tag(
 				'path',
 				reduce(
 					node.attrs,
 					function(initial, value, name) {
 						if ( name === 'path' ) name = 'd';
+
 						initial[name] = value.toString();
+
 						return initial;
 					},
-					initial
-				)
-			);
+					{}
+				),
+				node.matrix
+				);
 		}
 		// Other serializers should go here
 	};
