@@ -110,34 +110,41 @@
 	* @param fontSize number
 	* @return number
 	*/
-	function computeTSpanDy(fontSize) {
+	function computeTSpanDy(fontSize, line, lines) {
 		if ( fontSize === null ) fontSize = 10;
 
-		return fontSize * 4.5 / 13;
+		//return fontSize * 4.5 / 13
+		return fontSize * 4.5 / 13 * ( line - .2 - lines / 2 ) * 3.5;
 	}
 
 	var serializer = {
 		'text': function(node) {
 			style = extractStyle(node);
 
-			return tag(
-				'text',
-				reduce(
-					node.attrs,
-					function(initial, value, name) {
-						if ( name !== 'text' && name !== 'w' && name !== 'h' ) {
-							if ( name === 'font-size') value = value + 'px';
+			var tags = new Array;
 
-							initial[name] = value.toString();
-						}
+			node.attrs['text'].split('\n').map(function(text, line) {
+				tags.push(tag(
+					'text',
+					reduce(
+						node.attrs,
+						function(initial, value, name) {
+							if ( name !== 'text' && name !== 'w' && name !== 'h' ) {
+								if ( name === 'font-size') value = value + 'px';
 
-						return initial;
-					},
-					{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
-					),
-				node.matrix,
-				tag('tspan', { dy: computeTSpanDy(style.font.size) }, null, node.attrs['text'])
-				);
+								initial[name] = value.toString();
+							}
+
+							return initial;
+						},
+						{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
+						),
+					node.matrix,
+					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, node.attrs['text'].split('\n').length) }, null, text)
+				));
+			});
+
+			return tags;
 		},
 		'path' : function(node) {
 			var initial = ( node.matrix.a === 1 && node.matrix.d === 1 ) ? {} : { 'transform' : node.matrix.toString() };
