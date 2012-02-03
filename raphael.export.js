@@ -132,7 +132,7 @@
 							if ( name !== 'text' && name !== 'w' && name !== 'h' ) {
 								if ( name === 'font-size') value = value + 'px';
 
-								initial[name] = value.toString();
+								initial[name] = escapeXML(value.toString());
 							}
 
 							return initial;
