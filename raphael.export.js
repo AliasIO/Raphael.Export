@@ -76,6 +76,8 @@
 
 		if ( typeof attrs === 'object' ) {
 			attrs = map(attrs, function(element, name) {
+				if ( name === 'transform') return;
+
 				return name + '="' + escapeXML(element) + '"';
 			}).join(' ');
 		}
