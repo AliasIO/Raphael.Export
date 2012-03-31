@@ -179,6 +179,8 @@
 		R.vml = false;
 
 		for ( var node = paper.bottom; node != null; node = node.next ) {
+			if ( node.node.style.display === 'none' ) continue;
+
 			var attrs = '';
 
 			// Use serializer
@@ -213,9 +215,7 @@
 				}
 			}
 
-			if ( node.node.style.display !== 'none' ) {
-				svg += '<' + node.type + ' transform="matrix(' + node.matrix.toString().replace(/^matrix\(|\)$/g, '') + ')"' + attrs + '></' + node.type + '>';
-			}
+			svg += '<' + node.type + ' transform="matrix(' + node.matrix.toString().replace(/^matrix\(|\)$/g, '') + ')"' + attrs + '></' + node.type + '>';
 		}
 
 		svg += '</svg>';
