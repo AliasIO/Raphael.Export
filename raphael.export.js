@@ -123,7 +123,7 @@
 
 			var tags = new Array;
 
-			node.attrs['text'].split('\n').map(function(text, line) {
+			map(node.attrs['text'].split('\n'), function(text, iterable, line) {
 				tags.push(tag(
 					'text',
 					reduce(
@@ -213,7 +213,9 @@
 				}
 			}
 
-			svg += '<' + node.type + ' transform="matrix(' + node.matrix.toString().replace(/^matrix\(|\)$/g, '') + ')"' + attrs + '></' + node.type + '>';
+			if ( node.node.style.display !== 'none' ) {
+				svg += '<' + node.type + ' transform="matrix(' + node.matrix.toString().replace(/^matrix\(|\)$/g, '') + ')"' + attrs + '></' + node.type + '>';
+			}
 		}
 
 		svg += '</svg>';
