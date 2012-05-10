@@ -126,6 +126,7 @@
 			var tags = new Array;
 
 			map(node.attrs['text'].split('\n'), function(text, iterable, line) {
+                                line = line || 0;
 				tags.push(tag(
 					'text',
 					reduce(
