@@ -125,7 +125,7 @@
 
 			var tags = new Array;
 
-			map(node.attrs['text'].split('\n'), function(text, iterable, line) {
+			map(node.attrs['text'].split('\n'), function(text, line) {
 				tags.push(tag(
 					'text',
 					reduce(
@@ -142,7 +142,7 @@
 						{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
 						),
 					node.matrix,
-					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, node.attrs['text'].split('\n').length) }, null, text)
+					tag('tspan', { dy: computeTSpanDy(style.font.size, parseInt(line) + 1, node.attrs['text'].split('\n').length) }, null, text)
 				));
 			});
 
