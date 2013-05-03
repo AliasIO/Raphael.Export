@@ -76,7 +76,19 @@
 
 		if ( typeof attrs === 'object' ) {
 			attrs = map(attrs, function(element, name) {
-				if ( name === 'transform') return;
+				switch ( name ) {
+					case 'transform':
+						return;
+
+					case 'fill':
+						if ( element.match(/^hsb/) ) {
+							var hsb = element.replace(/^hsb\(|\)$/g, '').split(',');
+
+							if ( hsb.length === 3 ) {
+								element = R.hsb2rgb(hsb[0], hsb[1], hsb[2]).toString();
+							}
+						}
+				}
 
 				return name + '="' + escapeXML(element) + '"';
 			}).join(' ');
