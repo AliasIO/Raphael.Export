@@ -133,55 +133,31 @@
 
 	var serializer = {
 		'text': function(node) {
-			var
-				i, tspan,
-				style     = extractStyle(node),
-				tags      = [],
-				textnodes = node[0].childNodes,
-				tspans    = []
-				;
+			style = extractStyle(node);
 
-			// create one text node
-			// with for each tspan inside a sub node
-			for  ( i = 0; i < textnodes.length; i++ ) {
-				tspan = textnodes[i];
+			var tags = new Array;
 
-				var
-					newtag,
-					attrs = {},
-					text  = tspan.childNodes[0].nodeValue
-					;
+			map(node.attrs['text'].split('\n'), function(text, iterable, line) {
+                                line = line || 0;
+				tags.push(tag(
+					'text',
+					reduce(
+						node.attrs,
+						function(initial, value, name) {
+							if ( name !== 'text' && name !== 'w' && name !== 'h' ) {
+								if ( name === 'font-size') value = value + 'px';
 
-				if ( tspan.attributes.hasOwnProperty('dy') ) {
-					attrs.dy = tspan.attributes.dy.value;
-				}
+								initial[name] = escapeXML(value.toString());
+							}
 
-				if ( tspan.attributes.hasOwnProperty('x') ) {
-					attrs.x = tspan.attributes.x.value;
-				}
-
-				newtag = tag('tspan', attrs, null, text);
-
-				tspans.push(newtag);
-			}
-
-			tags.push(tag(
-				'text',
-				reduce(
-					node.attrs, function(initial, value, name) {
-						if ( name !== 'text' && name !== 'w' && name !== 'h' ) {
-							if ( name === 'font-size') value = value + 'px';
-
-							initial[name] = escapeXML(value.toString());
-						}
-
-						return initial;
-					},
-					{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
-				),
-				node.matrix,
-				tspans.join('')
+							return initial;
+						},
+						{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
+						),
+					node.matrix,
+					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, node.attrs['text'].split('\n').length) }, null, text)
 				));
+			});
 
 			return tags;
 		},
