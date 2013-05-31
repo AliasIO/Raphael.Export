@@ -171,7 +171,7 @@
 					function(initial, value, name) {
 						if ( name === 'path' ) name = 'd';
 
-						initial[name] = value.toString();
+						initial[name] = value ? value.toString() : '';
 
 						return initial;
 					},
