@@ -81,13 +81,7 @@
 						return;
 
 					case 'fill':
-						if ( element.match(/^hsb/) ) {
-							var hsb = element.replace(/^hsb\(|\)$/g, '').split(',');
-
-							if ( hsb.length === 3 ) {
-								element = R.hsb2rgb(hsb[0], hsb[1], hsb[2]).toString();
-							}
-						}
+						element = hsbToHex(element);
 				}
 
 				return name + '="' + escapeXML(element) + '"';
@@ -138,7 +132,8 @@
 			var tags = new Array;
 
 			map(node.attrs['text'].split('\n'), function(text, iterable, line) {
-                                line = line || 0;
+				line = line || 0;
+
 				tags.push(tag(
 					'text',
 					reduce(
@@ -151,11 +146,10 @@
 							}
 
 							return initial;
-						},
-						{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
-						),
-					node.matrix,
-					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, node.attrs['text'].split('\n').length) }, null, text)
+						}, {
+							style: 'text-anchor: middle; ' + styleToString(style) + ';'
+						}
+					), node.matrix, tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, node.attrs['text'].split('\n').length) }, null, text)
 				));
 			});
 
@@ -169,9 +163,11 @@
 				reduce(
 					node.attrs,
 					function(initial, value, name) {
-						if ( name === 'path' ) name = 'd';
+						if ( name === 'path' ) {
+							name = 'd';
+						}
 
-						initial[name] = value ? value.toString() : '';
+						initial[name] = typeof value !== 'undefined' ? value.toString() : '';
 
 						return initial;
 					},
@@ -181,6 +177,18 @@
 				);
 		}
 		// Other serializers should go here
+	};
+
+	var hsbToHex = function(value) {
+		if ( value.match(/^hsb/) ) {
+			var hsb = value.replace(/^hsb\(|\)$/g, '').split(',');
+
+			if ( hsb.length === 3 ) {
+				value = R.hsb2rgb(hsb[0], hsb[1], hsb[2]).toString();
+			}
+		}
+
+		return value;
 	};
 
 	R.fn.toSVG = function() {
@@ -194,7 +202,9 @@
 		R.vml = false;
 
 		for ( var node = paper.bottom; node != null; node = node.next ) {
-			if ( node.node.style.display === 'none' ) continue;
+			if ( node.node.style.display === 'none' ) {
+				continue;
+			}
 
 			var attrs = '';
 
@@ -223,6 +233,9 @@
 						name = '';
 
 						break;
+
+					case 'fill':
+						node.attrs[i] = hsbToHex(node.attrs[i]);
 				}
 
 				if ( name ) {
