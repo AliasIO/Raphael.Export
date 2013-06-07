@@ -151,7 +151,6 @@
 	function computeTSpanDy(fontSize, line, lines) {
 		if ( fontSize === null ) fontSize = 10;
 
-		console.log('computeTSpanDy: fontSize='+fontSize,' line='+line,' lines='+lines);
 		return fontSize * 4.5 / 13 * ( line - .2 - lines / 2 ) * 3.5;
 	}
 
