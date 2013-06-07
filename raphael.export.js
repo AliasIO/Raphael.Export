@@ -15,7 +15,7 @@
 	function escapeXML(s) {
 		if ( typeof s === 'number' ) return s.toString();
 
-		var replace = { '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot', '\'': 'apos' };
+		var replace = { '<': 'lt', '>': 'gt', '"': 'quot', '\'': 'apos' };
 
 		for ( var entity in replace ) {
 			s = s.replace(new RegExp(entity, 'g'), '&' + replace[entity] + ';');
