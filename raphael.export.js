@@ -15,7 +15,7 @@
 	function escapeXML(s) {
 		if ( typeof s === 'number' ) return s.toString();
 
-		var replace = { '&': 'amp', '<': 'lt', '>': 'gt', '"': 'quot', '\'': 'apos' };
+		var replace = { '<': 'lt', '>': 'gt', '"': 'quot', '\'': 'apos' };
 
 		for ( var entity in replace ) {
 			s = s.replace(new RegExp(entity, 'g'), '&' + replace[entity] + ';');
@@ -31,13 +31,25 @@
 	* @returns array
 	*/
 	function map(iterable, callback) {
-		var mapped = new Array;
+		var mapped = [],
+			undef = 'undefined',
+			i;
 
-		for ( var i in iterable ) {
-			if ( iterable.hasOwnProperty(i) ) {
-				var value = callback.call(this, iterable[i], i);
-
-				if ( value !== null ) mapped.push(value);
+		// use an index iteration if we're dealing with an array
+		if( typeof iterable.unshift != 'undefined'){
+			var l = iterable.length;
+			for ( i = 0; i < l; i++ ) {
+				if( typeof iterable[i] != undef ){
+					var value = callback.call(this, iterable[i], i);
+					if( value !== null ) mapped.push(value);
+				}
+			}
+		} else {
+			for ( i in iterable ) {
+				if ( iterable.hasOwnProperty(i) ) {
+					var value = callback.call(this, iterable[i], i);
+					if ( value !== null ) mapped.push(value);
+				}
 			}
 		}
 
@@ -81,7 +93,13 @@
 						return;
 
 					case 'fill':
-						element = hsbToHex(element);
+						if ( element.match(/^hsb/) ) {
+							var hsb = element.replace(/^hsb\(|\)$/g, '').split(',');
+
+							if ( hsb.length === 3 ) {
+								element = R.hsb2rgb(hsb[0], hsb[1], hsb[2]).toString();
+							}
+						}
 				}
 
 				return name + '="' + escapeXML(element) + '"';
@@ -98,7 +116,9 @@
 		return {
 			font: {
 				family: node.attrs.font.replace(/^.*?"(\w+)".*$/, '$1'),
-				size:   typeof node.attrs['font-size'] === 'undefined' ? null : node.attrs['font-size']
+				size:   typeof node.attrs['font-size'] === 'undefined' ? null : parseInt( node.attrs['font-size'] ),
+				style: typeof node.attrs['font-style'] === 'undefined' ? null : node.attrs['font-style'],
+				weight: typeof node.attrs['font-weight'] === 'undefined' ? null : node.attrs['font-weight']		
 				}
 			};
 	}
@@ -109,7 +129,17 @@
 	*/
 	function styleToString(style) {
 		// TODO figure out what is 'normal'
-		return 'font: normal normal normal 10px/normal ' + style.font.family + ( style.font.size === null ? '' : '; font-size: ' + style.font.size + 'px' );
+		// Tyler: it refers to the default inherited from CSS. Order of terms here:
+		// 		  http://www.w3.org/TR/SVG/text.html#FontProperty
+		var norm = 'normal',
+			font = style.font;
+		// return 'font: normal normal normal 10px/normal ' + style.font.family + ( style.font.size === null ? '' : '; font-size: ' + style.font.size + 'px' );
+		return [ 'font:',
+		         (font.style || norm), // font-style (e.g. italic)
+		         norm, // font-variant
+		         (font.weight || norm), // font-weight (e.g. bold)
+		         (font.size ? font.size + 'px' : '10px') + '/normal', // font-size/IGNORED line-height!
+		         font.family ].join(' ');
 	}
 
 	/**
@@ -127,29 +157,29 @@
 
 	var serializer = {
 		'text': function(node) {
-			style = extractStyle(node);
-
-			var tags = new Array;
-
-			map(node.attrs['text'].split('\n'), function(text, iterable, line) {
-				line = line || 0;
-
-				tags.push(tag(
+			var style = extractStyle(node),
+				tags = new Array,
+				textLines = node.attrs['text'].split('\n'),
+				totalLines = textLines.length;
+			
+			map(textLines, function(text, line) {
+                tags.push(tag(
 					'text',
 					reduce(
 						node.attrs,
 						function(initial, value, name) {
 							if ( name !== 'text' && name !== 'w' && name !== 'h' ) {
-								if ( name === 'font-size') value = value + 'px';
+								if ( name === 'font-size') value = parseInt(value) + 'px';
 
 								initial[name] = escapeXML(value.toString());
 							}
 
 							return initial;
-						}, {
-							style: 'text-anchor: middle; ' + styleToString(style) + ';'
-						}
-					), node.matrix, tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, node.attrs['text'].split('\n').length) }, null, text)
+						},
+						{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
+						),
+					node.matrix,
+					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, totalLines) }, null, text)
 				));
 			});
 
@@ -163,11 +193,9 @@
 				reduce(
 					node.attrs,
 					function(initial, value, name) {
-						if ( name === 'path' ) {
-							name = 'd';
-						}
+						if ( name === 'path' ) name = 'd';
 
-						initial[name] = typeof value !== 'undefined' ? value.toString() : '';
+						initial[name] = value.toString();
 
 						return initial;
 					},
@@ -177,18 +205,6 @@
 				);
 		}
 		// Other serializers should go here
-	};
-
-	var hsbToHex = function(value) {
-		if ( value.match(/^hsb/) ) {
-			var hsb = value.replace(/^hsb\(|\)$/g, '').split(',');
-
-			if ( hsb.length === 3 ) {
-				value = R.hsb2rgb(hsb[0], hsb[1], hsb[2]).toString();
-			}
-		}
-
-		return value;
 	};
 
 	R.fn.toSVG = function() {
@@ -202,9 +218,7 @@
 		R.vml = false;
 
 		for ( var node = paper.bottom; node != null; node = node.next ) {
-			if ( node.node.style.display === 'none' ) {
-				continue;
-			}
+			if ( node.node.style.display === 'none' ) continue;
 
 			var attrs = '';
 
@@ -233,9 +247,6 @@
 						name = '';
 
 						break;
-
-					case 'fill':
-						node.attrs[i] = hsbToHex(node.attrs[i]);
 				}
 
 				if ( name ) {
