@@ -118,7 +118,7 @@
 				family: node.attrs.font.replace(/^.*?"(\w+)".*$/, '$1'),
 				size:   typeof node.attrs['font-size'] === 'undefined' ? null : parseInt( node.attrs['font-size'] ),
 				style: typeof node.attrs['font-style'] === 'undefined' ? null : node.attrs['font-style'],
-				weight: typeof node.attrs['font-weight'] === 'undefined' ? null : node.attrs['font-weight']		
+				weight: typeof node.attrs['font-weight'] === 'undefined' ? null : node.attrs['font-weight']
 				}
 			};
 	}
@@ -159,9 +159,9 @@
 		'text': function(node) {
 			var style = extractStyle(node),
 				tags = new Array,
-				textLines = node.attrs['text'].split('\n'),
+				textLines = node.attrs['text'].toString().split('\n'),
 				totalLines = textLines.length;
-			
+
 			map(textLines, function(text, line) {
                 tags.push(tag(
 					'text',
