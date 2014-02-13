@@ -119,8 +119,9 @@
 				size:   typeof node.attrs['font-size'] === 'undefined' ? null : parseInt( node.attrs['font-size'] ),
 				style: typeof node.attrs['font-style'] === 'undefined' ? null : node.attrs['font-style'],
 				weight: typeof node.attrs['font-weight'] === 'undefined' ? null : node.attrs['font-weight']
-				}
-			};
+			},
+			anchor: typeof node.attrs['text-anchor'] === 'undefined' ? null : node.attrs['text-anchor']
+		};
 	}
 
 	/**
@@ -132,9 +133,10 @@
 		// Tyler: it refers to the default inherited from CSS. Order of terms here:
 		// 		  http://www.w3.org/TR/SVG/text.html#FontProperty
 		var norm = 'normal',
+			textAnchor = 'text-anchor: ' + ( style.anchor || 'middle' ) + '; ',
 			font = style.font;
 		// return 'font: normal normal normal 10px/normal ' + style.font.family + ( style.font.size === null ? '' : '; font-size: ' + style.font.size + 'px' );
-		return [ 'font:',
+		return textAnchor + [ 'font:',
 		         (font.style || norm), // font-style (e.g. italic)
 		         norm, // font-variant
 		         (font.weight || norm), // font-weight (e.g. bold)
@@ -161,7 +163,7 @@
 				tags = new Array,
 				textLines = node.attrs['text'].toString().split('\n'),
 				totalLines = textLines.length;
-
+			
 			map(textLines, function(text, line) {
                 tags.push(tag(
 					'text',
@@ -176,7 +178,7 @@
 
 							return initial;
 						},
-						{ style: 'text-anchor: middle; ' + styleToString(style) + ';' }
+						{ style: styleToString(style) + ';' }
 						),
 					node.matrix,
 					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, totalLines) }, null, text)
