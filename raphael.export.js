@@ -239,6 +239,7 @@
 
 			for ( i in node.attrs ) {
 				var name = i;
+				var value = '';
 
 				switch ( i ) {
 					case 'src':
@@ -249,10 +250,102 @@
 						name = '';
 
 						break;
+
+					case 'fill':
+						//skip if there is any gradient
+						if(node.attrs.gradient)
+							continue;
+						break;
+					case 'gradient':
+						//radial gradient
+						var id = node.id;
+						var gradient = node.attrs.gradient;
+						var fx = 0.5, fy=0.5;
+						gradient = String(gradient).replace(R._radial_gradient, function (all, _fx, _fy) {
+			                type = "radial";
+			                if (_fx && _fy) {
+			                    fx = parseFloat(_fx);
+			                    fy = parseFloat(_fy);
+			                    var dir = ((fy > .5) * 2 - 1);
+			                    Math.pow(fx - .5, 2) + Math.pow(fy - .5, 2) > .25 &&
+			                        (fy = Math.sqrt(.25 - Math.pow(fx - .5, 2)) * dir + .5) &&
+			                        fy != .5 &&
+			                        (fy = fy.toFixed(5) - 1e-5 * dir);
+			                }
+			                return '';
+			            });
+						gradient = gradient.split(/\s*\-\s*/);
+						if(node.attrs.gradient.match(/^r/g)){
+							var dots = R._parseDots(gradient);
+							if (!dots) {
+				                continue;
+				            }	
+							svg += '<defs>';
+							svg += '	    <radialGradient id="radialgradient'+id+'" fx="'+fx+'" fy="'+fy+'" >';
+
+							for(var di = 0; di < dots.length; di++){
+								var offset = (di/(dots.length-1) * 100)+'%';
+								//if dot has an offset
+								if(dots[di].offset)							
+									offset = dots[di].offset;
+								svg +=  '<stop stop-color="'+dots[di].color+'" offset="'+offset+'"/>';
+							}
+							svg += '    </radialGradient>';
+							svg += '</defs>';
+
+							name = 'fill';
+							value = 'url(#radialgradient'+id+')';
+
+						}else{//linear gradient
+
+							//assuming gradient is validated already!!
+							var angle = gradient.shift();
+							angle = parseFloat(angle)*-1;
+			                if (isNaN(angle)) {
+			                   continue; 
+			                }
+							var dots = R._parseDots(gradient);
+							if (!dots) {
+				                continue;
+				            }
+				            var vector = [0, 0, Math.cos(R.rad(angle)), Math.sin(R.rad(angle))],
+			                       max = 1 / (Math.max(Math.abs(vector[2]), Math.abs(vector[3])) || 1);
+			                vector[2] *= max;
+			                vector[3] *= max;
+			                if (vector[2] < 0) {
+			                    vector[0] = -vector[2];
+			                    vector[2] = 0;
+			                }
+			                if (vector[3] < 0) {
+			                    vector[1] = -vector[3];
+			                    vector[3] = 0;
+			                }
+
+				            svg += '<defs>';
+							svg += '	    <linearGradient id="lineargradient'+id+'" x1="'+vector[0]+'" y1="'+vector[1]+'" x2="'+vector[2]+'" y2="'+vector[3]+'">';
+
+							for(var di = 0; di < dots.length; di++){
+								var offset = (di/(dots.length-1) * 100)+'%';
+								//if dot has an offset
+								if(dots[di].offset)							
+									offset = dots[di].offset;
+								svg +=  '<stop stop-color="'+dots[di].color+'" offset="'+offset+'"/>';
+							}
+							svg += '    </linearGradient>';
+							svg += '</defs>';
+
+							name = 'fill';
+							value = 'url(#lineargradient'+id+')';
+
+						}
+						break;
 				}
 
 				if ( name ) {
-					attrs += ' ' + name + '="' + escapeXML(node.attrs[i].toString()) + '"';
+					if(value)
+						attrs += ' ' + name + '="' + escapeXML(value) + '"';
+					else
+						attrs += ' ' + name + '="' + escapeXML(node.attrs[i].toString()) + '"';
 				}
 			}
 
