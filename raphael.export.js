@@ -181,7 +181,7 @@
 						{ style: styleToString(style) + ';' }
 						),
 					node.matrix,
-					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, totalLines) }, null, text)
+					tag('tspan', { dy: computeTSpanDy(style.font.size, line + 1, totalLines) }, null, text.replace(/&/g, "&amp;"))
 				));
 			});
 
