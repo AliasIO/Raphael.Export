@@ -143,6 +143,20 @@
 		         (font.size ? font.size + 'px' : '10px') + '/normal', // font-size/IGNORED line-height!
 		         font.family ].join(' ');
 	}
+	
+	/**
+	 * repairs the hex color which missed the '#'
+	 * @param any string
+	 * @return hexvalue of rgb
+	 */
+	function convertToHexColor(value) {
+		
+		if(/^[0-9A-F]{6}$/i.test(value)){
+			value = '#' + value;
+		}
+		
+		return value;
+	}
 
 	/**
 	* Computes tspan dy using font size. This formula was empircally determined
@@ -173,7 +187,12 @@
 							if ( name !== 'text' && name !== 'w' && name !== 'h' ) {
 								if ( name === 'font-size') value = parseInt(value) + 'px';
 
+								if( name === 'stroke'){
+									value = convertToHexColor(value);
+								}
+								
 								initial[name] = escapeXML(value.toString());
+								
 							}
 
 							return initial;
@@ -196,7 +215,11 @@
 					node.attrs,
 					function(initial, value, name) {
 						if ( name === 'path' ) name = 'd';
-
+						
+						if( name === 'stroke'){
+							value = convertToHexColor(value);
+						}
+						
 						initial[name] = value.toString();
 
 						return initial;
@@ -337,6 +360,13 @@
 							name = 'fill';
 							value = 'url(#lineargradient'+id+')';
 
+						}
+						break;
+					case 'stroke':
+						if(value){
+							value = convertToHexColor(value);
+						}else{
+							value = convertToHexColor(node.attrs[i].toString());
 						}
 						break;
 				}
