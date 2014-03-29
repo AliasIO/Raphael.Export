@@ -265,6 +265,19 @@
 				var value = '';
 
 				switch ( i ) {
+					case 'r':
+						/**
+						 * set 'rx' and 'ry' to 'r'
+						*/
+						value = node.attrs.r;
+						node.attrs.rx = value;
+						node.attrs.ry = value;
+						
+						/**
+						 * skip adding the 'r' attribute
+						*/
+						continue;
+					
 					case 'src':
 						name = 'xlink:href';
 
