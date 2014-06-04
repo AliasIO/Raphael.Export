@@ -200,7 +200,7 @@
 				 * if text node has a class set, apply it to the attrs object
 				*/
 				if (node.node.className.baseVal != "") {
-					attrs.class = node.node.className.baseVal;
+					attrs["class"] = node.node.className.baseVal;
 				}
                 tags.push(tag(
 					'text',
