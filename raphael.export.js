@@ -115,7 +115,7 @@
 	function extractStyle(node) {
 		return {
 			font: {
-				family: node.attrs.font.replace(/^.*?"(\w+)".*$/, '$1'),
+				family: typeof node.attrs.font === 'undefined' ? null : node.attrs.font.replace(/^.?"(\w+)".$/, '$1'),				
 				size:   typeof node.attrs['font-size'] === 'undefined' ? null : parseInt( node.attrs['font-size'] ),
 				style: typeof node.attrs['font-style'] === 'undefined' ? null : node.attrs['font-style'],
 				weight: typeof node.attrs['font-weight'] === 'undefined' ? null : node.attrs['font-weight']
