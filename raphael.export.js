@@ -199,10 +199,11 @@
 				/**
 				 * if text node has a class set, apply it to the attrs object
 				*/
-				if (node.node.className.baseVal != "") {
+				if (node.node.className.baseVal != "" && node.node.className.baseVal !== undefined) {
 					attrs["class"] = node.node.className.baseVal;
 				}
-                tags.push(tag(
+				
+                		tags.push(tag(
 					'text',
 					attrs,
 					node.matrix,
